@@ -8,7 +8,9 @@ Open `index.html` in a browser. The weather panel fetches current and hourly dat
 
 The traffic card opens the route in Google Maps. Its starting point is Rochestown Lodge Hotel, a nearby landmark, so the exact home address is not included in this project. The map shows the approximate area between that landmark and Amgen; it is not turn-by-turn navigation. The page does not calculate a live drive-time estimate; that needs a traffic service and API credentials.
 
-Tide predictions use the Marine Institute's Dublin Port station via its ERDDAP service. Heights are shown in metres above local Lowest Astronomical Tide. These are astronomical tide predictions; storm surge and wind effects are not included. The data is licensed under CC BY 4.0, so attribution is included in the dashboard.
+The tide panel is labelled for Dún Laoghaire and uses the Marine Institute's Dublin Port prediction point, the nearest listed point for this preview. The Marine Institute station list has no Dún Laoghaire point. Heights are shown in metres above local Lowest Astronomical Tide. These are astronomical tide predictions; storm surge and wind effects are not included. The data is licensed under CC BY 4.0, so attribution is included in the dashboard.
+
+The wind compass uses Dublin Bay Buoy's public latest-reading endpoint. It shows the buoy's wind speed, direction, gusts, and reading time; values are in knots and direction is degrees true, meteorological “from”. The API's anonymous key is publishable, and the dashboard refreshes it every 15 minutes. Attribution and the not-for-navigation note are shown on the panel.
 
 ## Publish with GitHub Pages
 

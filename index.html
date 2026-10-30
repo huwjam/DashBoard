@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f2f1eb">
   <meta name="description" content="A calm daily weather and commute dashboard for Glenageary.">
-  <title>Good morning</title>
+  <title>Good morning — Glenageary</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
     :root {
       color-scheme: light;
-      --paper: #f2f1eb;
+    --paper: #f7f8f5;
       --ink: #16221f;
       --muted: #66716c;
-      --line: #d9ddd5;
+    --line: #e0e4df;
       --green: #244b40;
       --mint: #dbe8df;
       --sun: #d58a45;
@@ -21,32 +21,32 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .shell { width: min(1120px, calc(100% - 56px)); margin: 0 auto; padding: 28px 0 34px; }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
-    .brand { display: flex; align-items: center; gap: 11px; font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
-    .mark { width: 28px; height: 28px; border: 1px solid var(--green); border-radius: 50%; display: grid; place-items: center; color: var(--green); font-size: 14px; }
+    .shell { width: min(1040px, calc(100% - 40px)); margin: 0 auto; padding: 18px 0 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    .brand { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .mark { width: 22px; height: 22px; border: 1px solid var(--green); border-radius: 50%; display: grid; place-items: center; color: var(--green); font-size: 12px; }
     .date { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
-    .intro { padding: 44px 0 28px; display: flex; justify-content: space-between; align-items: end; gap: 20px; }
-    .eyebrow { color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
-    h1 { margin: 10px 0 0; font-size: clamp(40px, 6.1vw, 72px); line-height: .99; letter-spacing: -.065em; font-weight: 600; }
-    .intro-note { width: 220px; flex: 0 0 auto; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .intro { padding: 22px 0 16px; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+    .eyebrow { color: var(--green); font-size: 10px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 4px 0 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; letter-spacing: -.045em; font-weight: 600; }
+    .intro-note { width: auto; flex: 0 0 auto; color: var(--muted); font-size: 12px; line-height: 1.4; }
     .main-grid { display: grid; grid-template-columns: 1.06fr .94fr; gap: 16px; }
-    .card { border: 1px solid var(--line); border-radius: 18px; background: var(--white); overflow: hidden; }
-    .weather { min-height: 320px; padding: 27px 30px; display: flex; flex-direction: column; justify-content: space-between; }
-    .card-head { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: var(--white); overflow: hidden; }
+    .weather { min-height: 260px; padding: 20px 22px; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 10px; }
     .live { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-weight: 700; }
     .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #6eaa78; box-shadow: 0 0 0 3px #e7f0e7; }
-    .weather-main { display: flex; align-items: center; gap: 22px; }
-    .weather-icon { font-size: 54px; line-height: 1; }
-    .temp { font-size: clamp(66px, 8vw, 92px); line-height: .9; letter-spacing: -.08em; font-weight: 500; font-variant-numeric: tabular-nums; }
-    .condition { margin-top: 10px; color: var(--muted); font-size: 15px; }
-    .weather-foot { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 17px; gap: 12px; }
+    .weather-main { display: flex; align-items: center; gap: 17px; }
+    .weather-icon { font-size: 42px; line-height: 1; }
+    .temp { font-size: clamp(54px, 7vw, 72px); line-height: .9; letter-spacing: -.075em; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .condition { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .weather-foot { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 12px; gap: 10px; }
     .metric-label { color: var(--muted); font-size: 11px; }
     .metric-value { margin-top: 6px; font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
-    .traffic { min-height: 320px; padding: 27px 28px; background: var(--green); color: #f7f8f3; display: flex; flex-direction: column; justify-content: space-between; }
+    .traffic { min-height: 260px; padding: 20px 22px; background: var(--green); color: #f7f8f3; display: flex; flex-direction: column; justify-content: space-between; }
     .traffic .card-head { color: #c5d3cb; }
     .route-label { margin-top: 12px; color: #c5d3cb; font-size: 12px; }
-    .destination { margin-top: 5px; font-size: clamp(25px, 3.2vw, 36px); line-height: 1.1; letter-spacing: -.045em; }
+    .destination { margin-top: 5px; font-size: clamp(24px, 3vw, 32px); line-height: 1.1; letter-spacing: -.04em; }
     .route-line { position: relative; display: flex; align-items: center; gap: 12px; padding: 20px 0 17px; color: #e6eee7; font-size: 13px; }
     .route-line::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; border-left: 1px dashed #8fa99a; }
     .route-point { position: relative; width: 13px; height: 13px; flex: 0 0 auto; border-radius: 50%; border: 2px solid #dbe8df; background: var(--green); }
@@ -56,31 +56,42 @@
     .eta { margin-top: 4px; font-size: 32px; font-weight: 550; letter-spacing: -.04em; }
     .eta-status { max-width: 145px; color: #dce7df; font-size: 12px; line-height: 1.4; text-align: right; }
     .traffic-link { display: inline-block; margin-top: 11px; color: #e5b27c; font-size: 12px; text-decoration: none; border-bottom: 1px solid #a77f56; padding-bottom: 2px; }
-    .detail-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 16px; margin-top: 16px; }
-    .map-card, .marine-card { padding: 22px 24px; }
+    .detail-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 14px; margin-top: 14px; }
+    .map-card, .marine-card { padding: 17px 18px; }
     .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
     .section-head span { color: var(--muted); font-size: 11px; }
-    #route-map { height: 258px; width: 100%; border-radius: 12px; background: #e7ece5; }
-    .map-caption { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; color: var(--muted); font-size: 10px; }
-    .marine-stack { display: grid; gap: 16px; }
-    .marine-card { min-height: 190px; }
-    .tide-current { display: flex; justify-content: space-between; align-items: baseline; margin: 15px 0 7px; }
+    #route-map { height: 220px; width: 100%; border-radius: 7px; background: #e7ece5; }
+    .map-caption { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; color: var(--muted); font-size: 9px; }
+    .marine-stack { display: grid; gap: 12px; align-content: start; }
+    .marine-card { min-height: 170px; }
+    .tide-current { display: flex; justify-content: space-between; align-items: baseline; margin: 10px 0 4px; }
     .tide-level { font-size: 32px; letter-spacing: -.04em; font-weight: 600; font-variant-numeric: tabular-nums; }
     .tide-phase { color: var(--green); font-size: 12px; font-weight: 700; }
-    .tide-chart { width: 100%; height: 58px; overflow: visible; }
-    .tide-events { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
-    .tide-event { border-top: 1px solid var(--line); padding-top: 9px; }
+    .tide-chart { width: 100%; height: 44px; overflow: visible; }
+    .tide-events { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+    .tide-event { border-top: 1px solid var(--line); padding-top: 7px; }
     .tide-event-label, .wind-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
     .tide-event-value { margin-top: 4px; font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
     .marine-source { display: block; margin-top: 10px; color: var(--muted); font-size: 10px; text-decoration: none; }
-    .wind-current { display: flex; align-items: center; gap: 14px; margin: 19px 0 17px; }
-    .wind-arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--green); font-size: 23px; }
-    .wind-speed { font-size: 32px; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .wind-current { display: flex; align-items: center; gap: 14px; margin: 10px 0 8px; }
+    .wind-compass { position: relative; flex: 0 0 68px; width: 68px; height: 68px; border: 1px solid var(--line); border-radius: 50%; background: #f5f7f2; color: var(--muted); font-size: 8px; font-weight: 700; }
+    .wind-compass::before, .wind-compass::after { content: ""; position: absolute; background: var(--line); }
+    .wind-compass::before { left: 50%; top: 10px; bottom: 10px; width: 1px; }
+    .wind-compass::after { top: 50%; left: 10px; right: 10px; height: 1px; }
+    .compass-n,.compass-e,.compass-s,.compass-w { position: absolute; z-index: 1; }
+    .compass-n { top: 4px; left: 50%; transform: translateX(-50%); color: var(--green); }
+    .compass-e { right: 4px; top: 50%; transform: translateY(-50%); }
+    .compass-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+    .compass-w { left: 4px; top: 50%; transform: translateY(-50%); }
+    .wind-arrow { position: absolute; z-index: 2; top: 50%; left: 50%; transform: translate(-50%,-55%); color: var(--sun); font-size: 29px; line-height: 1; transform-origin: 50% 55%; }
+    .wind-speed { font-size: 28px; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
     .wind-speed small { font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
     .wind-meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .wind-force { margin-top: 6px; color: var(--green); font-size: 11px; font-weight: 700; }
     .wind-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .forecast-wrap { margin-top: 16px; padding: 22px 25px 19px; }
-    .forecast-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+    .wind-attribution { margin-top: 10px; color: var(--muted); font-size: 9px; line-height: 1.35; }
+    .forecast-wrap { margin-top: 14px; padding: 16px 18px 14px; }
+    .forecast-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
     h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
     .forecast-title span { color: var(--muted); font-size: 11px; }
     .hours { display: grid; grid-template-columns: repeat(6, 1fr); }
@@ -91,14 +102,14 @@
     .hour-icon { margin: 10px 0 6px; font-size: 19px; }
     .hour-temp { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
     .hour-rain { margin-top: 5px; color: #648091; font-size: 10px; }
-    footer { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; padding: 18px 2px 0; }
+    footer { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; padding: 12px 2px 0; }
     @media (max-width: 700px) {
-      .shell { width: min(100% - 30px, 520px); padding-top: 18px; }
-      .intro { padding: 33px 0 21px; align-items: start; flex-direction: column; }
+      .shell { width: min(100% - 24px, 520px); padding-top: 13px; }
+      .intro { padding: 17px 0 13px; align-items: start; flex-direction: column; gap: 6px; }
       .intro-note { width: auto; max-width: 340px; }
       .main-grid, .detail-grid { grid-template-columns: 1fr; }
-      .weather, .traffic { min-height: 285px; }
-      #route-map { height: 230px; }
+      .weather, .traffic { min-height: 235px; }
+      #route-map { height: 210px; }
       .hours { grid-template-columns: repeat(3, 1fr); row-gap: 18px; }
       .hour:nth-child(4) { border-left: 0; padding-left: 0; }
       footer { gap: 15px; flex-wrap: wrap; }
@@ -108,12 +119,12 @@
 <body>
   <div class="shell">
     <header>
-      <div class="brand"><span class="mark">↗</span> The daily outlook</div>
+      <div class="brand"><span class="mark">↗</span> Glenageary · Dún Laoghaire</div>
       <div class="date" id="date">Glenageary</div>
     </header>
     <section class="intro">
-      <div><div class="eyebrow">Your morning, at a glance</div><h1>Good morning,<br>Aine!</h1></div>
-      <div class="intro-note">A little look at the weather and the road ahead before you head out.</div>
+      <div><div class="eyebrow">Today</div><h1>Weather and the road ahead</h1></div>
+      <div class="intro-note">Glenageary → Amgen · Pottery Road</div>
     </section>
     <main>
       <div class="main-grid">
@@ -146,17 +157,18 @@
           <div class="map-caption"><span>Home marker uses a nearby landmark</span><span>Map data © OpenStreetMap</span></div>
         </section>
         <div class="marine-stack">
-          <section class="card marine-card" aria-label="Dublin Port tide predictions">
-            <div class="section-head"><h2>Tides · Dublin Port</h2><span>Today</span></div>
+          <section class="card marine-card" aria-label="Dublin Bay buoy wind observations">
+            <div class="section-head"><h2>Wind · Dublin Bay</h2><span id="wind-status">Loading station…</span></div>
+            <div class="wind-current"><div class="wind-compass" aria-label="Wind direction compass"><span class="compass-n">N</span><span class="compass-e">E</span><span class="compass-s">S</span><span class="compass-w">W</span><span class="wind-arrow" id="wind-arrow" aria-hidden="true">↑</span></div><div><div class="wind-speed"><span id="wind-speed">—</span> <small>kt</small></div><div class="wind-meta" id="wind-direction">From —°</div><div class="wind-force" id="wind-force">Beaufort —</div></div></div>
+            <div class="wind-foot"><div><div class="wind-label">Gusts</div><div class="tide-event-value" id="wind-gusts">—</div></div><div><div class="wind-label">Reading time</div><div class="tide-event-value" id="wind-observed">—</div></div></div>
+            <div class="wind-attribution">Data from <a href="https://dublinbaybuoy.com/" style="color:inherit">Dublin Bay Buoy</a>, sourced from Irish Lights MetOcean and Open-Meteo · not for navigation.</div>
+          </section>
+          <section class="card marine-card" aria-label="Dún Laoghaire tide preview using Dublin Port predictions">
+            <div class="section-head"><h2>Tides · Dún Laoghaire</h2><span>Today</span></div>
             <div class="tide-current"><div class="tide-level"><span id="tide-level">—</span><span style="font-size:16px;color:var(--muted)"> m</span></div><div class="tide-phase" id="tide-phase">Loading prediction…</div></div>
             <svg class="tide-chart" viewBox="0 0 400 58" preserveAspectRatio="none" aria-label="Tide level trend"><path d="M0 45 C55 48,72 8,125 10 S195 51,250 43 S320 11,400 16" fill="none" stroke="#4c8274" stroke-width="3" stroke-linecap="round"/><path d="M0 45 C55 48,72 8,125 10 S195 51,250 43 S320 11,400 16 L400 58 L0 58Z" fill="#dbe8df" opacity=".6"/></svg>
             <div class="tide-events"><div class="tide-event"><div class="tide-event-label">Next high</div><div class="tide-event-value" id="next-high">—</div></div><div class="tide-event"><div class="tide-event-label">Next low</div><div class="tide-event-value" id="next-low">—</div></div></div>
-            <a class="marine-source" href="https://www.marine.ie/site-area/data-services/real-time-observations/tidal-predictions" target="_blank" rel="noopener">Marine Institute predictions · Dublin Port</a>
-          </section>
-          <section class="card marine-card" aria-label="Current wind in Glenageary">
-            <div class="section-head"><h2>Wind · Glenageary</h2><span>Live weather</span></div>
-            <div class="wind-current"><div class="wind-arrow" id="wind-arrow" aria-hidden="true">↑</div><div><div class="wind-speed"><span id="wind-speed">—</span> <small>km/h</small></div><div class="wind-meta" id="wind-direction">Loading wind…</div></div></div>
-            <div class="wind-foot"><div><div class="wind-label">Gusts</div><div class="tide-event-value" id="wind-gusts">—</div></div><div><div class="wind-label">Feels like</div><div class="tide-event-value" id="wind-feels">—</div></div></div>
+            <a class="marine-source" href="https://www.marine.ie/site-area/data-services/real-time-observations/tidal-predictions" target="_blank" rel="noopener">Dublin Port prediction · Marine Institute</a>
           </section>
         </div>
       </div>
@@ -165,7 +177,7 @@
         <div class="hours" id="hours"></div>
       </section>
     </main>
-    <footer><span>Weather: <a href="https://open-meteo.com/" style="color:inherit">Open-Meteo</a> · Tides: Marine Institute · refreshed every 15 minutes</span><span>Made for the moment before you leave.</span></footer>
+    <footer><span>Weather: <a href="https://open-meteo.com/" style="color:inherit">Open-Meteo</a> · Tides: Marine Institute · wind: Dublin Bay Buoy</span><span>Updated through the day</span></footer>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
@@ -187,17 +199,40 @@
         $('weather-icon').textContent = weatherIcon(c.weather_code);
         $('feels').textContent = `${Math.round(c.apparent_temperature)}°`;
         $('wind').textContent = `${Math.round(c.wind_speed_10m)} km/h`;
-        $('wind-speed').textContent = Math.round(c.wind_speed_10m);
-        $('wind-direction').textContent = `${compass(c.wind_direction_10m)} · from ${compass(c.wind_direction_10m)}`;
-        $('wind-arrow').style.transform = `rotate(${c.wind_direction_10m}deg)`;
-        $('wind-gusts').textContent = `${Math.round(c.wind_gusts_10m)} km/h`;
-        $('wind-feels').textContent = `${Math.round(c.apparent_temperature)}°C`;
         $('rain').textContent = `${data.daily.precipitation_sum[0]} mm`;
         const now = new Date();
         const upcoming = data.hourly.time.map((t,i)=>({t:new Date(t),i})).filter(x=>x.t.getHours() >= now.getHours()).slice(0,6);
         $('hours').innerHTML = upcoming.map(({t,i},n)=>`<div class="hour"><div class="hour-time">${n===0?'Now':t.toLocaleTimeString('en-IE',{hour:'numeric'})}</div><div class="hour-icon" aria-hidden="true">${weatherIcon(data.hourly.weather_code[i])}</div><div class="hour-temp">${Math.round(data.hourly.temperature_2m[i])}°</div><div class="hour-rain">${data.hourly.precipitation_probability[i]}% rain</div></div>`).join('');
         $('updated').textContent = `Updated ${now.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})} · hourly outlook`;
       } catch (err) { $('condition').textContent = 'Weather is temporarily unavailable'; }
+    }
+    const beaufort = knots => {
+      const limits=[1,4,7,11,17,22,28,34,41,48,56,64];
+      const n=limits.findIndex(x=>knots<x);
+      return n<0?12:n;
+    };
+    async function refreshBuoyWind() {
+      try {
+        const apiKey='sb_publishable_R5KkIpbiwNajUyx3I4aewQ_S4NI8hl3';
+        const url='https://api.dublinbaybuoy.com/rest/v1/readings?select=timestamp,avg_wind,gust_speed,wind_dir&order=timestamp.desc&limit=1';
+        const res=await fetch(url,{headers:{apikey:apiKey},cache:'no-store'});
+        if(!res.ok) throw new Error('buoy wind unavailable');
+        const rows=await res.json(), r=rows[0];
+        if(!r || r.avg_wind==null || r.wind_dir==null) throw new Error('buoy wind missing');
+        const speed=Number(r.avg_wind), gust=Number(r.gust_speed), degrees=Number(r.wind_dir), observed=new Date(r.timestamp);
+        if(!Number.isFinite(speed) || !Number.isFinite(degrees)) throw new Error('invalid buoy reading');
+        $('wind-speed').textContent=speed.toFixed(1);
+        $('wind-direction').textContent=`From ${Math.round(degrees)}° · ${compass(degrees)}`;
+        $('wind-arrow').style.transform=`translate(-50%,-55%) rotate(${degrees}deg)`;
+        $('wind-force').textContent=`Beaufort ${beaufort(speed)} · ${speed<1?'Calm':`Force ${beaufort(speed)}`}`;
+        $('wind-gusts').textContent=Number.isFinite(gust)?`${gust.toFixed(1)} kt`:'—';
+        $('wind-observed').textContent=observed.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Dublin'});
+        const age=(Date.now()-observed.getTime())/60000;
+        $('wind-status').textContent=age<120?'Buoy · recent reading':`Buoy · ${Math.max(0,Math.round(age/60))}h old`;
+      } catch (err) {
+        $('wind-status').textContent='Buoy data unavailable';
+        $('wind-direction').textContent='Station reading unavailable';
+      }
     }
     async function refreshTide() {
       try {
@@ -217,7 +252,7 @@
         const high=turns.find(p=>p.type==='High'), low=turns.find(p=>p.type==='Low');
         const fmt = p => p ? `${p.time.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})} · ${p.level.toFixed(2)} m` : 'Not available';
         $('next-high').textContent=fmt(high); $('next-low').textContent=fmt(low);
-        $('tide-phase').textContent = 'Dublin Port prediction';
+        $('tide-phase').textContent = 'Dún Laoghaire preview';
         const levels=points.slice(0,72).map(p=>p.level), min=Math.min(...levels), max=Math.max(...levels), range=max-min||1;
         const path=levels.map((v,i)=>`${i?'L':'M'}${(i/(levels.length-1)*400).toFixed(1)},${(52-(v-min)/range*44).toFixed(1)}`).join(' ');
         document.querySelector('.tide-chart path').setAttribute('d',path);
@@ -238,9 +273,11 @@
     }
     refreshWeather();
     refreshTide();
+    refreshBuoyWind();
     initMap();
     setInterval(refreshWeather, 15 * 60 * 1000);
     setInterval(refreshTide, 60 * 60 * 1000);
+    setInterval(refreshBuoyWind, 15 * 60 * 1000);
   </script>
 </body>
 </html>
