@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f2f1eb">
   <meta name="description" content="A calm daily weather and commute dashboard for Glenageary.">
   <title>Good morning — Glenageary</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
     :root {
       color-scheme: light;
@@ -55,6 +56,29 @@
     .eta { margin-top: 4px; font-size: 32px; font-weight: 550; letter-spacing: -.04em; }
     .eta-status { max-width: 145px; color: #dce7df; font-size: 12px; line-height: 1.4; text-align: right; }
     .traffic-link { display: inline-block; margin-top: 11px; color: #e5b27c; font-size: 12px; text-decoration: none; border-bottom: 1px solid #a77f56; padding-bottom: 2px; }
+    .detail-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 16px; margin-top: 16px; }
+    .map-card, .marine-card { padding: 22px 24px; }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    .section-head span { color: var(--muted); font-size: 11px; }
+    #route-map { height: 258px; width: 100%; border-radius: 12px; background: #e7ece5; }
+    .map-caption { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; color: var(--muted); font-size: 10px; }
+    .marine-stack { display: grid; gap: 16px; }
+    .marine-card { min-height: 190px; }
+    .tide-current { display: flex; justify-content: space-between; align-items: baseline; margin: 15px 0 7px; }
+    .tide-level { font-size: 32px; letter-spacing: -.04em; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .tide-phase { color: var(--green); font-size: 12px; font-weight: 700; }
+    .tide-chart { width: 100%; height: 58px; overflow: visible; }
+    .tide-events { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+    .tide-event { border-top: 1px solid var(--line); padding-top: 9px; }
+    .tide-event-label, .wind-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+    .tide-event-value { margin-top: 4px; font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .marine-source { display: block; margin-top: 10px; color: var(--muted); font-size: 10px; text-decoration: none; }
+    .wind-current { display: flex; align-items: center; gap: 14px; margin: 19px 0 17px; }
+    .wind-arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--green); font-size: 23px; }
+    .wind-speed { font-size: 32px; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .wind-speed small { font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+    .wind-meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .wind-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .forecast-wrap { margin-top: 16px; padding: 22px 25px 19px; }
     .forecast-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
     h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
@@ -72,34 +96,14 @@
       .shell { width: min(100% - 30px, 520px); padding-top: 18px; }
       .intro { padding: 33px 0 21px; align-items: start; flex-direction: column; }
       .intro-note { width: auto; max-width: 340px; }
-      .main-grid { grid-template-columns: 1fr; }
+      .main-grid, .detail-grid { grid-template-columns: 1fr; }
       .weather, .traffic { min-height: 285px; }
+      #route-map { height: 230px; }
       .hours { grid-template-columns: repeat(3, 1fr); row-gap: 18px; }
       .hour:nth-child(4) { border-left: 0; padding-left: 0; }
       footer { gap: 15px; flex-wrap: wrap; }
-      <!-- 2) Add this CSS somewhere inside <style> -->
-.map-panel {
-  margin-top: 16px;
-  padding: 22px 25px 19px;
-}
-
-.map-wrap {
-  margin-top: 16px;
-  height: 340px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-#map {
-  width: 100%;
-  height: 100%;
-}
     }
   </style>
-  <!-- 1) Add this in the <head> after your existing <style> block -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <div class="shell">
@@ -135,23 +139,35 @@
           </div>
         </section>
       </div>
+      <div class="detail-grid">
+        <section class="card map-card" aria-label="Map of the route from Glenageary to Amgen">
+          <div class="section-head"><h2>On the way</h2><span>Glenageary → Pottery Road</span></div>
+          <div id="route-map" role="img" aria-label="Street map showing the route area between Glenageary and Amgen"></div>
+          <div class="map-caption"><span>Home marker uses a nearby landmark</span><span>Map data © OpenStreetMap</span></div>
+        </section>
+        <div class="marine-stack">
+          <section class="card marine-card" aria-label="Dublin Port tide predictions">
+            <div class="section-head"><h2>Tides · Dublin Port</h2><span>Today</span></div>
+            <div class="tide-current"><div class="tide-level"><span id="tide-level">—</span><span style="font-size:16px;color:var(--muted)"> m</span></div><div class="tide-phase" id="tide-phase">Loading prediction…</div></div>
+            <svg class="tide-chart" viewBox="0 0 400 58" preserveAspectRatio="none" aria-label="Tide level trend"><path d="M0 45 C55 48,72 8,125 10 S195 51,250 43 S320 11,400 16" fill="none" stroke="#4c8274" stroke-width="3" stroke-linecap="round"/><path d="M0 45 C55 48,72 8,125 10 S195 51,250 43 S320 11,400 16 L400 58 L0 58Z" fill="#dbe8df" opacity=".6"/></svg>
+            <div class="tide-events"><div class="tide-event"><div class="tide-event-label">Next high</div><div class="tide-event-value" id="next-high">—</div></div><div class="tide-event"><div class="tide-event-label">Next low</div><div class="tide-event-value" id="next-low">—</div></div></div>
+            <a class="marine-source" href="https://www.marine.ie/site-area/data-services/real-time-observations/tidal-predictions" target="_blank" rel="noopener">Marine Institute predictions · Dublin Port</a>
+          </section>
+          <section class="card marine-card" aria-label="Current wind in Glenageary">
+            <div class="section-head"><h2>Wind · Glenageary</h2><span>Live weather</span></div>
+            <div class="wind-current"><div class="wind-arrow" id="wind-arrow" aria-hidden="true">↑</div><div><div class="wind-speed"><span id="wind-speed">—</span> <small>km/h</small></div><div class="wind-meta" id="wind-direction">Loading wind…</div></div></div>
+            <div class="wind-foot"><div><div class="wind-label">Gusts</div><div class="tide-event-value" id="wind-gusts">—</div></div><div><div class="wind-label">Feels like</div><div class="tide-event-value" id="wind-feels">—</div></div></div>
+          </section>
+        </div>
+      </div>
       <section class="card forecast-wrap" aria-label="Today's hourly forecast">
         <div class="forecast-title"><h2>Through the day</h2><span id="updated">Hourly outlook · Glenageary</span></div>
         <div class="hours" id="hours"></div>
       </section>
     </main>
-    <!-- 3) Add this inside <main>, after the main-grid section and before the footer -->
-<section class="card map-panel" aria-label="Map of Glenageary">
-  <div class="forecast-title">
-    <h2>Route overview</h2>
-    <span>Glenageary area</span>
+    <footer><span>Weather: <a href="https://open-meteo.com/" style="color:inherit">Open-Meteo</a> · Tides: Marine Institute · refreshed every 15 minutes</span><span>Made for the moment before you leave.</span></footer>
   </div>
-  <div class="map-wrap">
-    <div id="map"></div>
-  </div>
-</section>
-    <footer><span>Weather updates automatically · refreshed every 15 minutes</span><span>Made for the moment before you leave.</span></footer>
-  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     const $ = id => document.getElementById(id);
     const weatherText = code => code === 0 ? 'Clear skies' : code <= 2 ? 'A little cloud' : code === 3 ? 'Cloudy' : code <= 48 ? 'Misty' : code <= 57 ? 'Drizzle' : code <= 67 ? 'Rain' : code <= 77 ? 'Snow' : code <= 82 ? 'Showers' : 'Showers nearby';
@@ -159,9 +175,10 @@
     const date = new Date();
     $('date').textContent = date.toLocaleDateString('en-IE', { weekday:'long', day:'numeric', month:'long' });
     $('traffic-time').textContent = date.toLocaleTimeString('en-IE', { hour:'2-digit', minute:'2-digit' });
+    const compass = degrees => ['N','NE','E','SE','S','SW','W','NW'][Math.round(degrees / 45) % 8];
     async function refreshWeather() {
       try {
-        const url = 'https://api.open-meteo.com/v1/forecast?latitude=53.280&longitude=-6.134&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=precipitation_sum&timezone=Europe%2FDublin&forecast_days=1';
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=53.280&longitude=-6.134&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=precipitation_sum&timezone=Europe%2FDublin&forecast_days=1';
         const res = await fetch(url, { cache:'no-store' });
         if (!res.ok) throw new Error('weather unavailable');
         const data = await res.json(), c = data.current;
@@ -170,6 +187,11 @@
         $('weather-icon').textContent = weatherIcon(c.weather_code);
         $('feels').textContent = `${Math.round(c.apparent_temperature)}°`;
         $('wind').textContent = `${Math.round(c.wind_speed_10m)} km/h`;
+        $('wind-speed').textContent = Math.round(c.wind_speed_10m);
+        $('wind-direction').textContent = `${compass(c.wind_direction_10m)} · from ${compass(c.wind_direction_10m)}`;
+        $('wind-arrow').style.transform = `rotate(${c.wind_direction_10m}deg)`;
+        $('wind-gusts').textContent = `${Math.round(c.wind_gusts_10m)} km/h`;
+        $('wind-feels').textContent = `${Math.round(c.apparent_temperature)}°C`;
         $('rain').textContent = `${data.daily.precipitation_sum[0]} mm`;
         const now = new Date();
         const upcoming = data.hourly.time.map((t,i)=>({t:new Date(t),i})).filter(x=>x.t.getHours() >= now.getHours()).slice(0,6);
@@ -177,42 +199,48 @@
         $('updated').textContent = `Updated ${now.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})} · hourly outlook`;
       } catch (err) { $('condition').textContent = 'Weather is temporarily unavailable'; }
     }
+    async function refreshTide() {
+      try {
+        const q = 'https://erddap.marine.ie/erddap/tabledap/imiTidePrediction.json?time%2CstationID%2CWater_Level&time%3E=now&time%3C=now%2B1day&stationID=%22Dublin_Port%22';
+        const res = await fetch(q, {cache:'no-store'});
+        if (!res.ok) throw new Error('tide prediction unavailable');
+        const json = await res.json(), rows = json.table.rows;
+        const points = rows.map(r=>({time:new Date(r[0]), level:Number(r[2])})).filter(p=>Number.isFinite(p.level)).sort((a,b)=>a.time-b.time);
+        if (!points.length) throw new Error('no tide points');
+        const now = new Date(), current = points.reduce((a,p)=>Math.abs(p.time-now)<Math.abs(a.time-now)?p:a,points[0]);
+        $('tide-level').textContent = current.level.toFixed(2);
+        const future = points.filter(p=>p.time > now), turns=[];
+        for(let i=1;i<future.length-1;i++) {
+          if(future[i].level>future[i-1].level && future[i].level>=future[i+1].level) turns.push({...future[i],type:'High'});
+          if(future[i].level<future[i-1].level && future[i].level<=future[i+1].level) turns.push({...future[i],type:'Low'});
+        }
+        const high=turns.find(p=>p.type==='High'), low=turns.find(p=>p.type==='Low');
+        const fmt = p => p ? `${p.time.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})} · ${p.level.toFixed(2)} m` : 'Not available';
+        $('next-high').textContent=fmt(high); $('next-low').textContent=fmt(low);
+        $('tide-phase').textContent = 'Dublin Port prediction';
+        const levels=points.slice(0,72).map(p=>p.level), min=Math.min(...levels), max=Math.max(...levels), range=max-min||1;
+        const path=levels.map((v,i)=>`${i?'L':'M'}${(i/(levels.length-1)*400).toFixed(1)},${(52-(v-min)/range*44).toFixed(1)}`).join(' ');
+        document.querySelector('.tide-chart path').setAttribute('d',path);
+        document.querySelector('.tide-chart path + path').setAttribute('d',`${path} L400 58 L0 58Z`);
+      } catch (err) { $('tide-phase').textContent='Tide data temporarily unavailable'; }
+    }
+    function initMap() {
+      if (!window.L) return;
+      const start=[53.26944,-6.14168], end=[53.27190,-6.15045];
+      const map=L.map('route-map',{scrollWheelZoom:false,zoomControl:true}).setView([53.2706,-6.146],15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+      const homeIcon=L.divIcon({className:'',html:'<div style="background:#244b40;color:white;border:2px solid white;border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font:700 11px system-ui;box-shadow:0 1px 5px #0005">H</div>',iconSize:[22,22],iconAnchor:[11,11]});
+      const workIcon=L.divIcon({className:'',html:'<div style="background:#d58a45;color:white;border:2px solid white;border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font:700 11px system-ui;box-shadow:0 1px 5px #0005">A</div>',iconSize:[22,22],iconAnchor:[11,11]});
+      L.marker(start,{icon:homeIcon}).addTo(map).bindPopup('Glenageary · approximate area');
+      L.marker(end,{icon:workIcon}).addTo(map).bindPopup('Amgen · Pottery Road');
+      L.polyline([start,end],{color:'#244b40',weight:4,dashArray:'7 8',opacity:.8}).addTo(map);
+      setTimeout(()=>map.invalidateSize(),250);
+    }
     refreshWeather();
+    refreshTide();
+    initMap();
     setInterval(refreshWeather, 15 * 60 * 1000);
-    <!-- 4) Add this at the end of the <script> block -->
-const map = L.map('map', {
-  zoomControl: true,
-  scrollWheelZoom: false
-}).setView([53.280, -6.134], 12);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-const home = [53.280, -6.134];
-const destination = [53.2804, -6.1193];
-
-L.marker(home)
-  .addTo(map)
-  .bindPopup('Glenageary');
-
-L.marker(destination)
-  .addTo(map)
-  .bindPopup('Amgen Pottery Road');
-
-L.circle(home, {
-  color: '#244b40',
-  fillColor: '#244b40',
-  fillOpacity: 0.18,
-  radius: 2000
-}).addTo(map);
-
-L.polyline([home, destination], {
-  color: '#244b40',
-  weight: 3,
-  opacity: 0.9
-}).addTo(map);
+    setInterval(refreshTide, 60 * 60 * 1000);
   </script>
 </body>
 </html>

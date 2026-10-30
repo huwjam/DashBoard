@@ -1,12 +1,14 @@
 # Glenageary Doorway Dashboard
 
-A lightweight, responsive dashboard for a wall-mounted screen. It shows current conditions and the hourly forecast for Glenageary, plus a link to the drive to Amgen on Pottery Road.
+A lightweight, responsive dashboard for a wall-mounted screen. It shows current conditions and the hourly forecast for Glenageary, a visual map of the nearby route area, Dublin Port tide predictions, and current wind.
 
 ## Run it
 
 Open `index.html` in a browser. The weather panel fetches current and hourly data from [Open-Meteo](https://open-meteo.com/) and refreshes every 15 minutes. Internet access is needed for weather updates.
 
-The traffic card opens the route in Google Maps. Its starting point is Rochestown Lodge Hotel, a nearby landmark, so the exact home address is not included in this project. The page does not yet calculate and display a live drive-time estimate; that needs a traffic service and API credentials.
+The traffic card opens the route in Google Maps. Its starting point is Rochestown Lodge Hotel, a nearby landmark, so the exact home address is not included in this project. The map shows the approximate area between that landmark and Amgen; it is not turn-by-turn navigation. The page does not calculate a live drive-time estimate; that needs a traffic service and API credentials.
+
+Tide predictions use the Marine Institute's Dublin Port station via its ERDDAP service. Heights are shown in metres above local Lowest Astronomical Tide. These are astronomical tide predictions; storm surge and wind effects are not included. The data is licensed under CC BY 4.0, so attribution is included in the dashboard.
 
 ## Publish with GitHub Pages
 
@@ -21,4 +23,5 @@ GitHub Pages websites are public on the internet, even when the source repositor
 
 - Change the nearby starting landmark or destination by editing the Google Maps URL on the traffic card in `index.html`.
 - The weather coordinates are set for Glenageary in the Open-Meteo request near the bottom of `index.html`.
+- Weather and wind use Open-Meteo; tides use the Marine Institute dataset. All widgets need internet access.
 - The visual layout uses plain HTML, CSS, and JavaScript; there is no build step or package installation.
